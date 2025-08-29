@@ -7,7 +7,7 @@ Além disso, dois LEDs foram adicionados para indicar visualmente a condição d
 
 🔵 LED azul → ambiente frio ou normal (até 25 °C)
 
-2. Materiais Utilizados
+# 2. Materiais Utilizados
 <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;"> <img src="https://github.com/user-attachments/assets/dbb5adae-6f1e-4d86-93a2-04bc007998db" style="width:80px; height:auto;" /> <span>1x ESP32 DevKit</span> </div> <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;"> <span>1x Sensor DHT11</span> </div> <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;"> <img src="https://github.com/user-attachments/assets/ed78b9e0-6ba4-4abc-8431-8ec26bd54b72" style="width:70px; height:auto;" /> <img src="https://github.com/user-attachments/assets/0d623fb3-924b-4d26-87cc-8b7f36f56e56" style="width:70px; height:auto;" /> <span>1x LED vermelho + resistor 220 Ω</span> </div> <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;"> <img src="https://github.com/user-attachments/assets/6225fe3d-b99f-4420-bfd9-1dca9182048b" style="width:70px; height:auto;" /> <img src="https://github.com/user-attachments/assets/0d623fb3-924b-4d26-87cc-8b7f36f56e56" style="width:70px; height:auto;" /> <span>1x LED azul + resistor 220 Ω</span> </div> <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;"> <img src="https://github.com/user-attachments/assets/d156e551-28df-4287-97f1-e562f089a54b" style="width:80px; height:auto;" /> <span>Jumpers (fios de conexão)</span> </div> <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;"> <img src="https://github.com/user-attachments/assets/2f37cbf6-e85e-4b8f-aee8-b299d4615fa0" style="width:100px; height:auto;" /> <span>Protoboard</span> </div>
 
 
@@ -76,3 +76,70 @@ LED azul aceso → temperatura ≤ 25 °C
 Exemplo de funcionamento:
 
 <div style="display:flex; gap:12px;"> <img src="https://github.com/user-attachments/assets/6d0fa6fc-d808-4e0f-99d7-537ccde41cde" style="width:220px; height:auto;" /> <img src="https://github.com/user-attachments/assets/fc2f91cd-ef5b-412e-8ba5-8f4207f8a5b0" style="width:220px; height:auto;" /> </div>
+
+
+# 5. Código Utilizado
+// Inclui a biblioteca para o sensor DHT
+#include <DHT.h>
+
+// Define o pino onde o sensor DHT está conectado
+#define DHTPIN 21
+
+// Define os pinos dos LEDs
+#define LED_AZUL 19
+#define LED_VERMELHO 18
+
+// Define o tipo de sensor DHT
+#define DHTTYPE DHT11
+
+// Cria a instância do sensor DHT
+DHT dht(DHTPIN, DHTTYPE);
+
+// A função 'setup' é executada uma única vez
+void setup() {
+  // Inicia a comunicação serial
+  Serial.begin(9600);
+  
+  // Define os pinos dos LEDs como SAÍDA
+  pinMode(LED_AZUL, OUTPUT);
+  pinMode(LED_VERMELHO, OUTPUT);
+  
+  Serial.println(F("Iniciando sensor DHT11 e LEDs..."));
+  
+  // Inicia a comunicação com o sensor DHT
+  dht.begin();
+}
+
+// A função 'loop' é executada repetidamente
+void loop() {
+  // Espera 2 segundos
+  delay(2000);
+  
+  // Lê a umidade e a temperatura
+  float h = dht.readHumidity();
+  float t = dht.readTemperature();
+
+  // Verifica se a leitura do sensor falhou
+  if (isnan(h) || isnan(t)) {
+    Serial.println(F("Falha na leitura do sensor DHT!"));
+    return;
+  }
+
+  // --- Lógica para acender os LEDs ---
+  if (t > 25) {
+    // Temperatura está quente
+    digitalWrite(LED_VERMELHO, HIGH); // Liga o LED vermelho
+    digitalWrite(LED_AZUL, LOW);      // Desliga o LED azul
+  } else {
+    // Temperatura está fria ou normal
+    digitalWrite(LED_VERMELHO, LOW);  // Desliga o LED vermelho
+    digitalWrite(LED_AZUL, HIGH);     // Liga o LED azul
+  }
+
+  // --- Impressão dos valores no Monitor Serial ---
+  Serial.print(F("Umidade: "));
+  Serial.print(h);
+  Serial.print(F("%  Temperatura: "));
+  Serial.print(t);
+  Serial.println(F("°C"));
+}
