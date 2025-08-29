@@ -59,7 +59,7 @@ O sensor DHT11 foi colocado na protoboard e conectado aos pinos do ESP32.
 
 <img src="https://github.com/user-attachments/assets/2996b890-ff86-427d-a01a-4c141b97a2c5" style="width:220px; height:auto; margin-bottom:12px;" />
 
-Etapa 5 – Ligações Finais com Jumpers naty naty sonsa
+Etapa 5 – Ligações Finais com Jumpers 
 
 Jumpers foram usados para conectar o ESP32 aos LEDs e ao DHT11.
 
